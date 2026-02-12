@@ -1,57 +1,55 @@
-# AulaProgramacaoWeb
-# Aula 01 – Introdução à Programação Web
+![alt text](image.png)
+## 🛒 Análise do Site: **amazon.com.br**
 
-## Apresentação da Disciplina
-A disciplina de Programação Web tem como objetivo apresentar os principais conceitos e tecnologias utilizados no desenvolvimento de aplicações web, combinando design visual, usabilidade e programação.
+### 🌐 Tipo de Site
 
-## Versionamento e Deploy
-O controle de versão permite registrar alterações no código ao longo do tempo, facilitando:
-- Trabalho em equipe
-- Recuperação de versões anteriores
-- Criação de ramificações (branches)
+E-commerce de grande escala, voltado para vendas online, logística, streaming e serviços digitais.
 
-Ferramentas citadas:
-- GitHub
-- GitLab
-- Bitbucket
+---
 
-Também foi abordado o conceito de deploy, que consiste na publicação da aplicação em um ambiente de produção.
+### 🧱 Tecnologias Utilizadas
 
-## Arquitetura de Sites
-A arquitetura de um site envolve:
-- Definição de escopo
-- Organização da estrutura
-- Experiência do usuário (UX/UI)
-- Prototipação e validação de ideias
+#### 🔹 **Front-end**
 
-## JavaScript (Vanilla JS)
-JavaScript é uma linguagem essencial no desenvolvimento front-end.
-Vanilla JS refere-se ao JavaScript puro, sem frameworks ou bibliotecas externas.
+* **HTML5** – Estrutura das páginas
+* **CSS3** – Estilização e layout
+* **JavaScript** – Interatividade e comportamento dinâmico
+* **Vue.js** – Framework JavaScript para construção de interfaces reativas
+* **RxJS** – Programação reativa para lidar com eventos e dados assíncronos
+* **jQuery 3.6.0** – Manipulação do DOM e compatibilidade com scripts legados
 
-## Servidores, Hospedagem e CMS
-Foram apresentados conceitos sobre:
-- Hospedagem de sites
-- Servidores web
-- CMS (Content Management System), que permitem criar sites com pouco ou nenhum código
+---
 
-## Website Builders
-Ferramentas que facilitam a criação de sites sem programação manual.
+#### ☁️ **Hospedagem e Infraestrutura**
 
-### Vantagens:
-- Facilidade de uso
-- Rapidez no desenvolvimento
-- Templates prontos
+* **Amazon Web Services (AWS)** – Infraestrutura principal de nuvem
+* **Google Cloud** – Serviços complementares de cloud computing
+* **Amazon CloudFront (CDN)** – Distribuição de conteúdo com alta performance e baixa latência
 
-### Limitações:
-- Menor flexibilidade
-- Possível impacto na performance
-- Dificuldade de migração
+---
 
-## Frameworks Front-end e Back-end
-Introdução a frameworks que auxiliam no desenvolvimento:
-- Front-end: React, Vue, Angular
-- Back-end: frameworks baseados em arquiteturas como MVC e APIs REST
+#### 📊 **Análise e Monitoramento**
 
-## Importância do Portfólio
-Ter projetos publicados é essencial para demonstrar habilidades, facilitar avaliações acadêmicas e aumentar oportunidades no mercado de trabalho.
+* **Snowplow Analytics** – Coleta e análise de dados de comportamento do usuário
+* **Amazon CloudWatch** – Monitoramento de aplicações, servidores e desempenho
 
+---
+
+#### 🎯 **Marketing e Personalização**
+
+* **Adobe Audience Manager** – Gerenciamento de audiência e dados para marketing direcionado
+
+---
+
+#### 🔤 **Fontes e UI**
+
+* **Google Font API** – Carregamento de fontes externas
+* **Arial / Sans Serif** – Tipografia padrão
+* **Open Graph** – Otimização de compartilhamento em redes sociais
+* **JavaScript Infovis Toolkit** – Visualização de dados
+
+---
+
+### 🧠 **Conclusão**
+
+O site **amazon.com.br** utiliza uma arquitetura moderna, escalável e altamente performática, combinando frameworks JavaScript, serviços em nuvem e ferramentas avançadas de monitoramento. O uso da AWS aliado a CDNs e bibliotecas reativas garante alta disponibilidade, rapidez e uma experiência de usuário eficiente, mesmo com grande volume de acessos simultâneos.
