@@ -1,4 +1,4 @@
-# AulaProgramacaoWeb
+# Aula Programação Web
 
 ## Apresentação da Disciplina
 A disciplina de Programação Web tem como objetivo apresentar os principais conceitos e tecnologias utilizados no desenvolvimento de aplicações web, combinando design visual, usabilidade e programação.
