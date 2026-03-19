@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyPath | Forje o seu Futuro</title>
+    <meta name="description" content="Plataforma de estudos gamificada com Inteligência Artificial">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">Study<span>Path</span></div>
+            <ul class="nav-links">
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><button class="btn-primary" onclick="ganharXP(); window.location.href='func.html'">Entrar no Forge</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-text">
+                <div class="badge">NOVIDADE: Forge AI v2.0</div>
+                <h1>O Caminho para a sua <span>Aprovação</span> é Forjado aqui.</h1>
+                <p>Pare de se perder em links. A nossa IA cria o roteiro, você foca na evolução. Ganhe XP enquanto domina novas habilidades.</p>
+                
+                <div class="hero-actions">
+                    <button class="btn-primary main-cta" onclick="ganharXP()">Começar Gratuitamente</button>
+                    <div class="xp-display">
+                        <i class="fas fa-bolt"></i> <span id="total-xp">0</span> XP Acumulado
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <model-viewer 
+    id="obj-3d" 
+    src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+    alt="StudyPath Core" 
+    camera-controls 
+    disable-zoom
+    min-camera-orbit="auto 90deg auto" 
+    max-camera-orbit="auto 90deg auto" 
+    interaction-prompt="none">
+</model-viewer>
+            </div>
+        </section>
+
+        <section id="recursos" class="features">
+            <div class="card">
+                <i class="fas fa-magic"></i>
+                <h3>Forge AI</h3>
+                <p>Cole um tema e crie um roadmap completo com vídeos e quadros em segundos.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-trophy"></i>
+                <h3>Gamificação</h3>
+                <p>Suba de nível, complete streaks e desbloqueie conquistas reais.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-chart-pie"></i>
+                <h3>Analytics</h3>
+                <p>Visualize o seu tempo de foco e saiba exatamente onde está a sua evolução.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 StudyPath - Projeto Académico Fatec</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
