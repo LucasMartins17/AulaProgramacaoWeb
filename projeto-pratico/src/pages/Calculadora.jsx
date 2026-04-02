@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NeoCard from '../components/NeoCard';
 
@@ -9,55 +9,52 @@ export default function Calculadora() {
 
   const btnClass = "bg-white border-4 border-black p-4 font-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all flex items-center justify-center";
 
-  // Lógica de cálculo refinada
-  const handleCalculate = () => {
+  // 1. Lógica de cálculo memorizada
+  const handleCalculate = useCallback(() => {
     if (!display) return;
     try {
       setHistory(display + ' =');
       // eslint-disable-next-line no-eval
       const result = eval(display);
-      setDisplay(String(Number(result.toFixed(4)))); // Evita dízimas gigantes
+      setDisplay(String(Number(result.toFixed(4))));
       setIsResult(true);
     } catch (e) {
       setDisplay("Error");
       setTimeout(() => setDisplay(''), 1000);
     }
-  };
+  }, [display]);
 
-  const handleClick = (val) => {
+  // 2. Lógica de clique memorizada
+  const handleClick = useCallback((val) => {
     if (isResult) {
-      // Se já houver um resultado e clicar em número, começa conta nova
-      // Se clicar em operador, continua do resultado
       if (['+', '-', '*', '/'].includes(val)) {
         setIsResult(false);
-        setDisplay(display + val);
+        setDisplay(prev => prev + val);
       } else {
         setIsResult(false);
         setDisplay(val);
       }
     } else {
-      setDisplay(display + val);
+      setDisplay(prev => prev + val);
     }
-  };
+  }, [isResult]);
 
-  // Suporte a teclado (Diferencial de ADS)
+  // 3. Suporte a teclado com dependências estáveis
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (/[0-9]/.test(e.key)) handleClick(e.key);
       if (['+', '-', '*', '/'].includes(e.key)) handleClick(e.key);
       if (e.key === 'Enter' || e.key === '=') handleCalculate();
       if (e.key === 'Backspace') setDisplay(d => d.slice(0, -1));
-      if (e.key === 'Escape') setDisplay('');
+      if (e.key === 'Escape') { setDisplay(''); setHistory(''); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [display, isResult]);
+  }, [handleClick, handleCalculate]); // Dependências corrigidas
 
   return (
     <NeoCard title="Neo-Calc / Pro">
       <div className="flex flex-col gap-4">
-        
-        {/* DISPLAY COM HISTÓRICO */}
         <div className="bg-black p-6 border-4 border-black shadow-[inset_0_4px_0_rgba(255,255,255,0.1)] relative overflow-hidden">
           <div className="text-neo-green/40 font-mono text-xs uppercase mb-1 h-4 tracking-widest">
             {history}
@@ -72,11 +69,9 @@ export default function Calculadora() {
               {display || '0'}
             </motion.div>
           </AnimatePresence>
-          {/* Efeito de Scanline (Linhas de monitor antigo) */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%]" />
         </div>
 
-        {/* GRID DE BOTÕES */}
         <div className="grid grid-cols-4 gap-3">
           <button 
             onClick={() => { setDisplay(''); setHistory(''); }}
@@ -114,7 +109,6 @@ export default function Calculadora() {
           </motion.button>
         </div>
 
-        {/* FOOTER LABEL */}
         <div className="flex justify-between items-center mt-2 px-1">
           <span className="text-[10px] font-black uppercase opacity-40 italic">Fatec Project v2.0</span>
           <div className="flex gap-1">

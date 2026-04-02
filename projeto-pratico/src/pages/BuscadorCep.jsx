@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import NeoCard from '../components/NeoCard';
@@ -9,23 +9,9 @@ export default function BuscadorCep() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(false);
 
-  // Máscara de CEP e Auto-busca
-  const handleInputChange = (e) => {
-    let val = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
-    if (val.length > 5) {
-      val = `${val.slice(0, 5)}-${val.slice(5, 8)}`;
-    }
-    setCep(val);
-  };
-
-  // Dispara busca automática ao completar 8 dígitos (9 com o hífen)
-  useEffect(() => {
-    if (cep.replace(/\D/g, '').length === 8) {
-      buscar();
-    }
-  }, [cep]);
-
-  const buscar = async () => {
+  // 1. Função de busca memorizada com useCallback
+  const buscar = useCallback(async () => {
+    if (!cep) return;
     setErro(false);
     setLoading(true);
     const cepLimpo = cep.replace(/\D/g, '');
@@ -44,7 +30,24 @@ export default function BuscadorCep() {
     } finally {
       setLoading(false);
     }
+  }, [cep]);
+
+  // 2. Máscara de CEP
+  const handleInputChange = (e) => {
+    let val = e.target.value.replace(/\D/g, ''); 
+    if (val.length > 5) {
+      val = `${val.slice(0, 5)}-${val.slice(5, 8)}`;
+    }
+    setCep(val);
   };
+
+  // 3. Auto-busca monitorando o comprimento do CEP
+  useEffect(() => {
+    const cepNumerico = cep.replace(/\D/g, '');
+    if (cepNumerico.length === 8) {
+      buscar();
+    }
+  }, [cep, buscar]); // Agora 'buscar' é uma dependência estável
 
   const copiarEndereco = () => {
     const texto = `${dados.logradouro}, ${dados.bairro}, ${dados.localidade}-${dados.uf}`;
@@ -55,8 +58,6 @@ export default function BuscadorCep() {
   return (
     <NeoCard title="Address Finder / Buscador">
       <div className="flex flex-col gap-6">
-        
-        {/* INPUT COM LABEL FLUTUANTE */}
         <div className="relative group">
           <motion.div
             animate={erro ? { x: [-10, 10, -10, 10, 0] } : {}}
@@ -71,11 +72,11 @@ export default function BuscadorCep() {
               maxLength={9}
               className={`w-full border-4 border-black p-5 pt-7 font-black text-3xl outline-none transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-none focus:translate-x-1 focus:translate-y-1 ${erro ? 'bg-red-100' : 'bg-white'}`}
               onChange={handleInputChange}
+              onKeyDown={(e) => e.key === 'Enter' && buscar()}
             />
           </motion.div>
         </div>
 
-        {/* LOADING INDICATOR NEOPUNK */}
         <AnimatePresence>
           {loading && (
             <motion.div 
@@ -106,7 +107,6 @@ export default function BuscadorCep() {
                   <p className="text-[10px] font-black uppercase opacity-60 italic">Street / Logradouro</p>
                   <p className="text-2xl font-black uppercase leading-tight">{dados.logradouro || 'N/A'}</p>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-[10px] font-black uppercase opacity-60 italic">Bairro</p>
@@ -117,7 +117,6 @@ export default function BuscadorCep() {
                     <p className="text-lg font-black uppercase">{dados.uf}</p>
                   </div>
                 </div>
-
                 <div className="bg-black text-white p-3 -mx-6 -mb-6 flex justify-between items-center">
                    <span className="font-mono text-sm tracking-widest px-2">{dados.localidade}</span>
                    <div className="bg-neo-green text-black px-2 py-0.5 font-black text-[10px]">MAP READY</div>
