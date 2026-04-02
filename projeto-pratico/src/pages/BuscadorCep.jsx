@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import NeoCard from '../components/NeoCard';
@@ -9,16 +9,29 @@ export default function BuscadorCep() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(false);
 
+  // Máscara de CEP e Auto-busca
+  const handleInputChange = (e) => {
+    let val = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+    if (val.length > 5) {
+      val = `${val.slice(0, 5)}-${val.slice(5, 8)}`;
+    }
+    setCep(val);
+  };
+
+  // Dispara busca automática ao completar 8 dígitos (9 com o hífen)
+  useEffect(() => {
+    if (cep.replace(/\D/g, '').length === 8) {
+      buscar();
+    }
+  }, [cep]);
+
   const buscar = async () => {
-    // Reset de estados
     setErro(false);
     setLoading(true);
+    const cepLimpo = cep.replace(/\D/g, '');
     
     try {
-      // Limpeza de caracteres não numéricos
-      const cepLimpo = cep.replace(/\D/g, '');
       const res = await axios.get(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-      
       if (res.data.erro) {
         setErro(true);
         setDados(null);
@@ -33,77 +46,92 @@ export default function BuscadorCep() {
     }
   };
 
-  return (
-    <NeoCard title="Buscador de CEP">
-      <div className="flex flex-col gap-5">
-        
-        {/* INPUT COM ANIMAÇÃO DE ERRO (SHAKE) */}
-        <motion.div
-          animate={erro ? { x: [-10, 10, -10, 10, 0] } : {}}
-          transition={{ duration: 0.4 }}
-        >
-          <input 
-            placeholder="00000-000"
-            maxLength={9}
-            className={`w-full border-4 border-black p-4 font-black text-2xl outline-none transition-colors ${erro ? 'bg-red-100 border-red-600' : 'focus:bg-neo-yellow/20'}`}
-            onChange={(e) => setCep(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && buscar()}
-          />
-          {erro && <p className="text-red-600 font-black text-xs mt-2 uppercase italic">CEP inválido ou não encontrado!</p>}
-        </motion.div>
+  const copiarEndereco = () => {
+    const texto = `${dados.logradouro}, ${dados.bairro}, ${dados.localidade}-${dados.uf}`;
+    navigator.clipboard.writeText(texto);
+    alert("Endereço copiado! / Address copied!");
+  };
 
-        {/* BOTÃO COM EFEITO DE ESCALA E CARREGAMENTO */}
-        <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={buscar} 
-          disabled={loading}
-          className={`relative border-4 border-black p-4 font-black text-xl shadow-neo transition-all uppercase
-            ${loading ? 'bg-gray-400 cursor-wait' : 'bg-neo-yellow active:shadow-none active:translate-x-1 active:translate-y-1'}
-          `}
-        >
-          {loading ? 'Buscando... / Fetching...' : 'Buscar / Search →'}
-        </motion.button>
+  return (
+    <NeoCard title="Address Finder / Buscador">
+      <div className="flex flex-col gap-6">
+        
+        {/* INPUT COM LABEL FLUTUANTE */}
+        <div className="relative group">
+          <motion.div
+            animate={erro ? { x: [-10, 10, -10, 10, 0] } : {}}
+            transition={{ duration: 0.4 }}
+          >
+            <span className="absolute -top-3 left-4 bg-neo-yellow border-2 border-black px-2 py-0.5 text-[10px] font-black uppercase z-10">
+              Digite o CEP / Enter ZIP
+            </span>
+            <input 
+              value={cep}
+              placeholder="00000-000"
+              maxLength={9}
+              className={`w-full border-4 border-black p-5 pt-7 font-black text-3xl outline-none transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-none focus:translate-x-1 focus:translate-y-1 ${erro ? 'bg-red-100' : 'bg-white'}`}
+              onChange={handleInputChange}
+            />
+          </motion.div>
+        </div>
+
+        {/* LOADING INDICATOR NEOPUNK */}
+        <AnimatePresence>
+          {loading && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex items-center justify-center gap-2 font-black italic text-neo-blue"
+            >
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-5 h-5 border-4 border-neo-blue border-t-transparent" />
+              SEARCHING...
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <AnimatePresence>
           {dados && (
             <motion.div 
-              initial={{ opacity: 0, y: 20, rotate: -2 }}
-              animate={{ opacity: 1, y: 0, rotate: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="mt-4 p-6 bg-neo-green border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden"
+              initial={{ scale: 0.8, y: 20, rotate: 2 }}
+              animate={{ scale: 1, y: 0, rotate: 0 }}
+              className="bg-neo-blue border-4 border-black p-6 shadow-neo relative"
             >
-              {/* Badge decorativa estilo "sticker" */}
-              <div className="absolute -right-2 -top-2 bg-black text-white px-3 py-1 text-[10px] font-black rotate-12">
-                FOUND!
+              <div className="absolute top-2 right-2 flex gap-2">
+                 <button onClick={copiarEndereco} className="bg-white border-2 border-black p-1 hover:bg-neo-yellow transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <span className="text-[10px] font-black">COPY</span>
+                 </button>
               </div>
 
               <div className="space-y-4">
-                <div className="group">
-                  <span className="text-[10px] font-black uppercase opacity-50 block leading-none">Rua / Street</span>
-                  <p className="text-2xl font-black uppercase leading-tight">{dados.logradouro || 'Bairro s/ nome'}</p>
+                <div className="border-b-4 border-black/10 pb-2">
+                  <p className="text-[10px] font-black uppercase opacity-60 italic">Street / Logradouro</p>
+                  <p className="text-2xl font-black uppercase leading-tight">{dados.logradouro || 'N/A'}</p>
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <span className="text-[10px] font-black uppercase opacity-50 block leading-none text-black">Bairro / Neighborhood</span>
-                    <p className="text-lg font-black uppercase">{dados.bairro || 'N/A'}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase opacity-60 italic">Bairro</p>
+                    <p className="text-lg font-black uppercase">{dados.bairro || 'Centro'}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-black uppercase opacity-50 block leading-none">Estado / UF</span>
+                    <p className="text-[10px] font-black uppercase opacity-60 italic">Estado</p>
                     <p className="text-lg font-black uppercase">{dados.uf}</p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t-2 border-black/20">
-                  <span className="text-[10px] font-black uppercase opacity-50 block leading-none">Cidade / City</span>
-                  <p className="text-2xl font-black uppercase">{dados.localidade}</p>
+                <div className="bg-black text-white p-3 -mx-6 -mb-6 flex justify-between items-center">
+                   <span className="font-mono text-sm tracking-widest px-2">{dados.localidade}</span>
+                   <div className="bg-neo-green text-black px-2 py-0.5 font-black text-[10px]">MAP READY</div>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {erro && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-red-500 border-4 border-black p-3 text-white font-black text-center italic uppercase">
+            Ops! CEP inexistente. / Not Found.
+          </motion.div>
+        )}
       </div>
     </NeoCard>
   );
