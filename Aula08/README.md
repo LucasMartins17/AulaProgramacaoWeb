@@ -52,4 +52,4 @@ Estética focada em contraste e tipografia para aplicações tipo SaaS.
 ## 🎓 Informações do Aluno
 * **Instituição:** Fatec - Disciplina de Programação Web
 * **Atividade:** Aula 08 - Comparativo de Frameworks
-* **Desenvolvedor:** [TEU NOME AQUI]
+* **Desenvolvedor:** [Lucas Martins]
