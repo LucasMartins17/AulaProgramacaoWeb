@@ -23,9 +23,10 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
+
+    /* Path Mapping Moderno */
     "paths": {
-      "@/*":["./src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]
