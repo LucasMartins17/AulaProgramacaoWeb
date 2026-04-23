@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Clock, Calendar, RefreshCw, Server } from 'lucide-react'; // Instale: npm install lucide-react
+import { Clock, Calendar, Globe, Cpu, Activity } from 'lucide-react';
 
 interface HorarioData {
   data: string;
@@ -8,103 +8,111 @@ interface HorarioData {
 
 const App = () => {
   const [dados, setDados] = useState<HorarioData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(false);
 
   const buscarHorario = async () => {
     try {
-      setLoading(true);
       const response = await fetch('http://localhost:3000/api/horario');
+      if (!response.ok) throw new Error();
       const data = await response.json();
       setDados(data);
       setErro(false);
     } catch (err) {
       setErro(true);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     buscarHorario();
-    const intervalo = setInterval(buscarHorario, 5000); // Atualiza a cada 5s para não sobrecarregar
-    return () => clearInterval(intervalo);
+    const timer = setInterval(buscarHorario, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-slate-200 flex flex-col items-center justify-center font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-[#020617] text-slate-200 flex flex-col items-center justify-center font-sans relative overflow-hidden">
       
-      {/* Efeito de Fundo - Luzes Neon */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* --- BACKGROUND MESH GRADIENT (UX VISUAL) --- */}
+      <div className="absolute top-0 -left-4 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob" />
+      <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000" />
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-4000" />
 
-      <div className="relative z-10 w-full max-w-md px-6">
+      <div className="relative z-10 w-full max-w-2xl px-6">
         
-        {/* Header de Status */}
-        <div className="flex items-center justify-between mb-6 px-2">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full animate-pulse ${erro ? 'bg-red-500' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`} />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              {erro ? 'System Offline' : 'System Online'}
-            </span>
+        {/* --- HEADER: TECH STACK INDICATOR --- */}
+        <div className="flex justify-between items-end mb-12 px-4">
+          <div className="space-y-1">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/60">System Status</h3>
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"><Cpu size={10}/></div>
+                <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"><Globe size={10}/></div>
+              </div>
+              <span className="text-xs font-medium text-slate-400">NodeJS Express API <span className="mx-1 text-slate-700">•</span> v1.0.0</span>
+            </div>
           </div>
-          <Server size={14} className="text-slate-600" />
-        </div>
-
-        {/* Card Principal */}
-        <div className="bg-slate-900/40 border border-white/10 backdrop-blur-2xl p-8 rounded-[2.5rem] shadow-2xl overflow-hidden relative group">
           
-          {/* Linha de brilho no topo do card */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-
-          {erro ? (
-            <div className="py-10 flex flex-col items-center">
-              <div className="bg-red-500/10 p-4 rounded-full mb-4">
-                <RefreshCw size={32} className="text-red-500 animate-spin" />
-              </div>
-              <p className="text-red-400 font-medium text-center">Falha na conexão com o servidor Express</p>
+          <div className="flex flex-col items-end">
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-md border ${erro ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>
+              <Activity size={12} className={erro ? "" : "animate-pulse"} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">{erro ? 'Offline' : 'Connected'}</span>
             </div>
-          ) : (
-            <div className="space-y-8">
-              {/* Seção da Hora */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-center gap-2 text-slate-500 mb-2">
-                  <Clock size={14} />
-                  <span className="text-[10px] font-bold uppercase tracking-tighter">Current Server Time</span>
-                </div>
-                <h2 className="text-7xl font-black tracking-tighter text-white tabular-nums">
-                  {dados?.hora.split(':')[0]}<span className="text-emerald-500 animate-pulse">:</span>{dados?.hora.split(':')[1]}
-                  <span className="text-2xl text-slate-500 ml-2 font-light">{dados?.hora.split(':')[2]}</span>
-                </h2>
-              </div>
-
-              {/* Seção da Data */}
-              <div className="flex items-center justify-center gap-3 bg-white/5 py-3 px-6 rounded-2xl border border-white/5">
-                <Calendar size={18} className="text-emerald-400" />
-                <span className="text-lg font-medium text-slate-300">
-                  {dados?.data || "---"}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Botão de Refresh */}
-          <button 
-            onClick={buscarHorario}
-            disabled={loading}
-            className="w-full mt-10 group/btn flex items-center justify-center gap-2 py-4 bg-emerald-500 text-black font-black rounded-2xl hover:bg-emerald-400 transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.2)] disabled:opacity-50"
-          >
-            <RefreshCw size={18} className={`${loading ? 'animate-spin' : 'group-hover/btn:rotate-180 transition-transform duration-500'}`} />
-            SYNC WITH SERVER
-          </button>
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-slate-600 text-[9px] font-bold uppercase tracking-[0.4em] leading-loose">
-            Full Stack Deployment Protocol <br />
-            <span className="text-slate-400">Vercel (Front) ↔ Render (API)</span>
-          </p>
+        {/* --- MAIN DISPLAY: THE LIQUID GLASS OBJECT --- */}
+        <div className="relative group perspective-1000">
+          {/* Efeito de Glow Profundo */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-[4rem] blur opacity-10 group-hover:opacity-30 transition duration-1000"></div>
+          
+          <div className="relative bg-[#0f172a]/40 border border-white/10 backdrop-blur-[40px] rounded-[3.5rem] p-16 shadow-2xl transition-all duration-700 hover:scale-[1.01] hover:border-white/20">
+            
+            {/* Glossy Reflection (O detalhe da "Gota") */}
+            <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/5 rounded-full blur-xl"></div>
+
+            <div className="flex flex-col items-center">
+              {/* Relógio Digital */}
+              <div className="relative">
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.5em] whitespace-nowrap">Atomic TimeSync</span>
+                <h1 className="text-[100px] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-500 leading-none tabular-nums drop-shadow-2xl">
+                  {dados?.hora || "00:00:00"}
+                </h1>
+              </div>
+
+              {/* Data e Divider */}
+              <div className="mt-10 flex items-center gap-6 w-full">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-700"></div>
+                <div className="flex items-center gap-3 px-6 py-2 bg-white/5 rounded-full border border-white/5">
+                  <Calendar size={16} className="text-emerald-500" />
+                  <span className="text-sm font-bold tracking-widest text-slate-300 uppercase">
+                    {dados?.data || "Fetching..."}
+                  </span>
+                </div>
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-700"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Efeito de Reflexo Inferior */}
+          <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-3/4 h-12 bg-emerald-500/10 blur-3xl rounded-full -z-10"></div>
+        </div>
+
+        {/* --- FOOTER: UX FEEDBACK --- */}
+        <div className="mt-20 grid grid-cols-2 gap-8 px-4">
+          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-500">
+              <Clock size={12} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Update Rate</span>
+            </div>
+            <p className="text-xs text-slate-400">Dados sincronizados em tempo real via Polling HTTP (1000ms).</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+            <div className="flex items-center gap-2 text-blue-500">
+              <Activity size={12} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Protocol</span>
+            </div>
+            <p className="text-xs text-slate-400">REST API com suporte a CORS e cabeçalhos de segurança ativos.</p>
+          </div>
         </div>
       </div>
     </div>
